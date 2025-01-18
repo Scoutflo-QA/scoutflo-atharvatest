@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mwoax
+  namespace: default
+  labels:
+    app: mwoax
+spec:
+  type: ClusterIP
+  selector:
+    app: mwoax
+  ports:
+    - name: http
+      protocol: TCP
+      port: 5000
+      targetPort: 5000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mwoax
+  namespace: default
+  labels:
+    app: mwoax
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mwoax
+  template:
+    metadata:
+      labels:
+        app: mwoax
+    spec:
+      containers:
+        - name: mwoax-container
+          image: codewithdeepak/damnserver:latest
+          ports:
+            - containerPort: 5000
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1024Mi
+              cpu: 500m
+          env:
+            - name: NODE_ENV
+              value: development
+            - name: PORT
+              value: '5000'
+            - name: DB_HOST
+              value: db_host
+            - name: DB_USER
+              value: db_user
+            - name: DB_PASS
+              value: db_pass
+            - name: DB_NAME
+              value: db_name
+            - name: JWT_SECRET
+              value: your-jwt-secret-key
+            - name: JWT_ACCESS_EXPIRATION_MINUTES
+              value: '5'
+            - name: JWT_REFRESH_EXPIRATION_DAYS
+              value: '30'
+            - name: LOG_FOLDER
+              value: logs
+            - name: LOG_FILE
+              value: '%DATE%-app-log.log'
+            - name: LOG_LEVEL
+              value: error
+            - name: REDIS_HOST
+              value: redis-host
+            - name: REDIS_PORT
+              value: '6379'
+            - name: REDIS_USE_PASSWORD
+              value: 'no'
+            - name: REDIS_PASSWORD
+              value: your-password
+      imagePullSecrets:
+        - name: scoutflo-deepak-dockerhub-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mwoax
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  rules:
+    - host: node-boiler-room2-g7u9b.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mwoax
+                port:
+                  number: 5000
+  tls:
+    - hosts:
+        - node-boiler-room2-g7u9b.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
