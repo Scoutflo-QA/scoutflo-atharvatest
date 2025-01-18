@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeboilerdeploy2
+  namespace: default
+  labels:
+    app: nodeboilerdeploy2
+spec:
+  type: ClusterIP
+  selector:
+    app: nodeboilerdeploy2
+  ports:
+    - name: http
+      protocol: TCP
+      port: 4999
+      targetPort: 4999
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodeboilerdeploy2
+  namespace: default
+  labels:
+    app: nodeboilerdeploy2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodeboilerdeploy2
+  template:
+    metadata:
+      labels:
+        app: nodeboilerdeploy2
+    spec:
+      containers:
+        - name: nodeboilerdeploy2-container
+          image: codewithdeepak/damnserver:latest
+          ports:
+            - containerPort: 4999
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1024Mi
+              cpu: 500m
+          env:
+            - name: NODE_ENV
+              value: development
+            - name: PORT
+              value: '5000'
+            - name: DB_HOST
+              value: db_host
+            - name: DB_USER
+              value: db_user
+            - name: DB_PASS
+              value: db_pass
+            - name: DB_NAME
+              value: db_name
+            - name: JWT_SECRET
+              value: your-jwt-secret-key
+            - name: JWT_ACCESS_EXPIRATION_MINUTES
+              value: '5'
+            - name: JWT_REFRESH_EXPIRATION_DAYS
+              value: '30'
+            - name: LOG_FOLDER
+              value: logs
+            - name: LOG_FILE
+              value: '%DATE%-app-log.log'
+            - name: LOG_LEVEL
+              value: error
+            - name: REDIS_HOST
+              value: redis-host
+            - name: REDIS_PORT
+              value: '6379'
+            - name: REDIS_USE_PASSWORD
+              value: 'no'
+            - name: REDIS_PASSWORD
+              value: your-password
+      imagePullSecrets:
+        - name: scoutflo-deepak-dockerhub-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nodeboilerdeploy2
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  rules:
+    - host: node-boiler-room2-xwyye.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nodeboilerdeploy2
+                port:
+                  number: 4999
+  tls:
+    - hosts:
+        - node-boiler-room2-xwyye.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
