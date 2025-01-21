@@ -12,8 +12,8 @@ spec:
   ports:
     - name: https
       protocol: TCP
-      port: 80
-      targetPort: 80
+      port: 2358
+      targetPort: 2358
 
 ---
 apiVersion: apps/v1
@@ -37,7 +37,7 @@ spec:
         - name: judge0-boardinfinity-container
           image: kalpeshbhalekar/judge0:latest
           ports:
-            - containerPort: 80
+            - containerPort: 2358
           resources:
             requests:
               memory: 512Mi
