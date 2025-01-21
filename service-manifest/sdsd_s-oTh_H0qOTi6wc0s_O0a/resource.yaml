@@ -12,7 +12,7 @@ spec:
   ports:
     - name: https
       protocol: TCP
-      port: 443
+      port: 2358
       targetPort: 2358
 
 ---
@@ -24,7 +24,7 @@ metadata:
   labels:
     app: judge0-boardinfinity
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: judge0-boardinfinity
@@ -71,7 +71,7 @@ spec:
               service:
                 name: judge0-boardinfinity
                 port:
-                  number: 443
+                  number: 2358
   tls:
     - hosts:
         - judge0-uw7q7.scoutflo.agency
