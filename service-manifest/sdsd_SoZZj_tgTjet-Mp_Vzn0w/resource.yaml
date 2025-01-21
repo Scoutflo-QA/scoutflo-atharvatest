@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ghostatharva2
+  namespace: default
+  labels:
+    app: ghostatharva2
+spec:
+  type: ClusterIP
+  selector:
+    app: ghostatharva2
+  ports:
+    - name: https
+      protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ghostatharva2
+  namespace: default
+  labels:
+    app: ghostatharva2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ghostatharva2
+  template:
+    metadata:
+      labels:
+        app: ghostatharva2
+    spec:
+      containers:
+        - name: ghostatharva2-container
+          image: kalpeshbhalekar/ghost:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 400m
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: NODE_VERSION
+              value: 18.20.5
+            - name: YARN_VERSION
+              value: 1.22.22
+            - name: GOSU_VERSION
+              value: '1.17'
+            - name: GHOST_CLI_VERSION
+              value: 1.26.1
+            - name: GHOST_INSTALL
+              value: /var/lib/ghost
+            - name: GHOST_CONTENT
+              value: /var/lib/ghost/content
+            - name: GHOST_VERSION
+              value: 5.107.0
+      imagePullSecrets:
+        - name: scoutflo-kalpesh-docker-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ghostatharva2
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  rules:
+    - host: ghost-ezti.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ghostatharva2
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - ghost-ezti.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
