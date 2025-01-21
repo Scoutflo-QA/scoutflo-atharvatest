@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ghostatharva
+  namespace: default
+  labels:
+    app: ghostatharva
+spec:
+  type: ClusterIP
+  selector:
+    app: ghostatharva
+  ports:
+    - name: https
+      protocol: TCP
+      port: 2368
+      targetPort: 2368
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ghostatharva
+  namespace: default
+  labels:
+    app: ghostatharva
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ghostatharva
+  template:
+    metadata:
+      labels:
+        app: ghostatharva
+    spec:
+      containers:
+        - name: ghostatharva-container
+          image: kalpeshbhalekar/ghost:latest
+          ports:
+            - containerPort: 2368
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 400m
+          env:
+            - name: NODE_ENV
+              value: production
+      imagePullSecrets:
+        - name: scoutflo-kalpesh-docker-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ghostatharva
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  rules:
+    - host: ghost-bmwzc.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ghostatharva
+                port:
+                  number: 2368
+  tls:
+    - hosts:
+        - ghost-bmwzc.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
