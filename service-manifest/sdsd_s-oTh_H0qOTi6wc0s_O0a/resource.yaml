@@ -71,7 +71,7 @@ spec:
               service:
                 name: judge0-boardinfinity
                 port:
-                  number: 80
+                  number: 2358
   tls:
     - hosts:
         - judge0-uw7q7.scoutflo.agency
