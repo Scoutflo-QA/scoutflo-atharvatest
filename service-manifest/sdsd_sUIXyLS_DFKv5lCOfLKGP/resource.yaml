@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworldatharva
+  namespace: default
+  labels:
+    app: helloworldatharva
+spec:
+  type: ClusterIP
+  selector:
+    app: helloworldatharva
+  ports:
+    - name: https
+      protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworldatharva
+  namespace: default
+  labels:
+    app: helloworldatharva
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloworldatharva
+  template:
+    metadata:
+      labels:
+        app: helloworldatharva
+    spec:
+      containers:
+        - name: helloworldatharva-container
+          image: kalpeshbhalekar/hello-world:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1024Mi
+              cpu: 500m
+          env:
+            - name: NODE_ENV
+              value: production
+      imagePullSecrets:
+        - name: scoutflo-kalpesh-docker-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: helloworldatharva
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  rules:
+    - host: hello-world-te014.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: helloworldatharva
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - hello-world-te014.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
