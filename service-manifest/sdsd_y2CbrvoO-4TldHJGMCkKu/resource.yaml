@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: testchideploy
+  namespace: default
+  labels:
+    app: testchideploy
+spec:
+  type: ClusterIP
+  selector:
+    app: testchideploy
+  ports:
+    - name: https
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testchideploy
+  namespace: default
+  labels:
+    app: testchideploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: testchideploy
+  template:
+    metadata:
+      labels:
+        app: testchideploy
+    spec:
+      containers:
+        - name: testchideploy-container
+          image: 619071315541.dkr.ecr.us-east-1.amazonaws.com/nfig-browser:1.0.0
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 200m
+            limits:
+              memory: 128Mi
+              cpu: 400m
+          env:
+            - name: NODE_ENV
+              value: production
+      imagePullSecrets:
+        - name: scoutflo-chi-aws-ecr
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: testchideploy
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  rules:
+    - host: chitest-mdg6h.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: testchideploy
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - chitest-mdg6h.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
