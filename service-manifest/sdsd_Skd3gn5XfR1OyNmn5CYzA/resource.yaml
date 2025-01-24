@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: metabaseabtest2
+  namespace: default
+  labels:
+    app: metabaseabtest2
+spec:
+  type: ClusterIP
+  selector:
+    app: metabaseabtest2
+  ports:
+    - name: https
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metabaseabtest2
+  namespace: default
+  labels:
+    app: metabaseabtest2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: metabaseabtest2
+  template:
+    metadata:
+      labels:
+        app: metabaseabtest2
+    spec:
+      containers:
+        - name: metabaseabtest2-container
+          image: 891376929531.dkr.ecr.ap-south-1.amazonaws.com/abtestprodmetabase-ph33j:2.18.0-1354e10
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 400m
+          env:
+            - name: FC_LANG
+              value: en-US LC_CTYPE=en_US.UTF-8
+            - name: JAVA_HOME
+              value: /opt/java/openjdk
+            - name: PATH
+              value: /opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+            - name: LANG
+              value: en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
+            - name: JAVA_VERSION
+              value: jdk-21.0.5+11
+      imagePullSecrets:
+        - name: scoutflo-ecr-test-aws-ecr
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: metabaseabtest2
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  rules:
+    - host: metabase-puxq1.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: metabaseabtest2
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - metabase-puxq1.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
