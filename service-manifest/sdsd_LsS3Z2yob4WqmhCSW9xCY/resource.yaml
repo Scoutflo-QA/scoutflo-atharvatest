@@ -5,7 +5,7 @@ metadata:
   namespace: default
   labels:
     app: monaco
-spec:
+spe
   type: ClusterIP
   selector:
     app: monaco
