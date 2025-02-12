@@ -170,7 +170,6 @@ metadata:
   namespace: default
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   rules:
     - host: judge0-main-ip03n.scoutflo.agency
@@ -180,9 +179,9 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: judge0ab4
+                name: judge0-server
                 port:
-                  number: 3000
+                  number: 2358
   tls:
     - hosts:
         - judge0-main-ip03n.scoutflo.agency
