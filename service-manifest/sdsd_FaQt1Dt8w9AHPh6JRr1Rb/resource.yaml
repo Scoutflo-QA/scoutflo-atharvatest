@@ -1,43 +1,48 @@
+# Service for the server
 apiVersion: v1
 kind: Service
 metadata:
-  name: judge0ab4
+  name: judge0-server
   namespace: default
-  labels:
-    app: judge0ab4
 spec:
-  type: ClusterIP
   selector:
-    app: judge0ab4
+    app: judge0
+    component: server
   ports:
-    - name: https
-      protocol: TCP
-      port: 3000
-      targetPort: 3000
+    - protocol: TCP
+      port: 2358
+      targetPort: 2358
+  type: ClusterIP
 
 ---
+# Server Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: judge0ab4
+  name: judge0-server
   namespace: default
   labels:
-    app: judge0ab4
+    app: judge0
+    component: server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: judge0ab4
+      app: judge0
+      component: server
   template:
     metadata:
       labels:
-        app: judge0ab4
+        app: judge0
+        component: server
     spec:
       containers:
-        - name: judge0ab4-container
+        - name: server
           image: satyamp07/judge0:latest
+          command: ["/bin/bash"]
+          args: ["-c", "rails db:migrate && rails server"]
           ports:
-            - containerPort: 3000
+            - containerPort: 2358
           resources:
             requests:
               memory: 512Mi
@@ -48,9 +53,59 @@ spec:
           env:
             - name: NEXT_PUBLIC_ATLAS_BACKEND
               value: https://api.atlas.scoutflo.com/api
+            # Add all your judge0.conf environment variables here
+            - name: RAILS_ENV
+              value: "production"
+            - name: RAILS_MAX_THREADS
+              value: "16"
+            - name: INTERVAL
+              value: "0.1"
+            # Add other environment variables as needed
       imagePullSecrets:
         - name: scoutflo-satyam-docker-docker
 
+---
+# Worker Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: judge0-worker
+  namespace: default
+  labels:
+    app: judge0
+    component: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: judge0
+      component: worker
+  template:
+    metadata:
+      labels:
+        app: judge0
+        component: worker
+    spec:
+      containers:
+        - name: worker
+          image: satyamp07/judge0:latest
+          command: ["./scripts/workers"]
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 400m
+          env:
+            - name: RAILS_ENV
+              value: "production"
+            - name: RAILS_MAX_THREADS
+              value: "16"
+            - name: INTERVAL
+              value: "0.1"
+      imagePullSecrets:
+        - name: scoutflo-satyam-docker-docker
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
