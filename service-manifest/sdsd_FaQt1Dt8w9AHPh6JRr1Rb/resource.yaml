@@ -122,11 +122,11 @@ spec:
           command: ["./scripts/workers"]
           resources:
             requests:
-              memory: 512Mi
-              cpu: 200m
+              memory: 1Gi
+              cpu: 500m
             limits:
-              memory: 1024Mi
-              cpu: 400m
+              memory: 2Gi
+              cpu: 1000m
           env:
             # Rails Environment
             - name: RAILS_ENV
