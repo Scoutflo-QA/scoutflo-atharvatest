@@ -13,7 +13,6 @@ spec:
       port: 2358
       targetPort: 2358
   type: ClusterIP
-
 ---
 # Server Deployment
 apiVersion: apps/v1
@@ -51,19 +50,50 @@ spec:
               memory: 1024Mi
               cpu: 400m
           env:
-            - name: NEXT_PUBLIC_ATLAS_BACKEND
-              value: https://api.atlas.scoutflo.com/api
-            # Add all your judge0.conf environment variables here
+            # Rails Environment
             - name: RAILS_ENV
               value: "production"
             - name: RAILS_MAX_THREADS
-              value: "16"
+              value: "8"
+            - name: RAILS_SERVER_PROCESSES
+              value: "2"
+            - name: RAILS_LOG_TO_STDOUT
+              value: "true"
+            # PostgreSQL Configuration
+            - name: POSTGRES_HOST
+              value: "db-postgresql-blr1-60847-do-user-16540921-0.i.db.ondigitalocean.com"
+            - name: POSTGRES_PORT
+              value: "25060"
+            - name: POSTGRES_DB
+              value: "defaultdb"
+            - name: POSTGRES_USER
+              value: "doadmin"
+            - name: POSTGRES_PASSWORD
+              value: "AVNS_u4vMOng_vMdjYzHkARi"
+            # Redis Configuration
+            - name: REDIS_SSL
+              value: "true"
+            - name: REDIS_URL
+              value: "rediss://default:AVNS_4AaSmffZAEFYZiL5t7h@boardinfinity-test-redis-do-user-16540921-0.i.db.ondigitalocean.com:25061/0"
+            # Judge0 Configuration
+            - name: SECRET_KEY_BASE
+              value: "YourSecretKeyBaseHere"
+            - name: MAINTENANCE_MESSAGE
+              value: "Judge0 is under maintenance"
             - name: INTERVAL
               value: "0.1"
-            # Add other environment variables as needed
+            - name: AUTHN_HEADER
+              value: "X-Auth-Token"
+            - name: AUTHZ_HEADER
+              value: "X-Auth-User"
+            - name: DISABLE_DATABASE_ENVIRONMENT_CHECK
+              value: "1"
+            - name: PORT
+              value: "2358"
+            - name: NEXT_PUBLIC_ATLAS_BACKEND
+              value: "https://api.atlas.scoutflo.com/api"
       imagePullSecrets:
         - name: scoutflo-satyam-docker-docker
-
 ---
 # Worker Deployment
 apiVersion: apps/v1
@@ -98,12 +128,38 @@ spec:
               memory: 1024Mi
               cpu: 400m
           env:
+            # Rails Environment
             - name: RAILS_ENV
               value: "production"
             - name: RAILS_MAX_THREADS
-              value: "16"
+              value: "8"
+            - name: RAILS_SERVER_PROCESSES
+              value: "2"
+            - name: RAILS_LOG_TO_STDOUT
+              value: "true"
+            # PostgreSQL Configuration
+            - name: POSTGRES_HOST
+              value: "db-postgresql-blr1-60847-do-user-16540921-0.i.db.ondigitalocean.com"
+            - name: POSTGRES_PORT
+              value: "25060"
+            - name: POSTGRES_DB
+              value: "defaultdb"
+            - name: POSTGRES_USER
+              value: "doadmin"
+            - name: POSTGRES_PASSWORD
+              value: "AVNS_u4vMOng_vMdjYzHkARi"
+            # Redis Configuration
+            - name: REDIS_SSL
+              value: "true"
+            - name: REDIS_URL
+              value: "rediss://default:AVNS_4AaSmffZAEFYZiL5t7h@boardinfinity-test-redis-do-user-16540921-0.i.db.ondigitalocean.com:25061/0"
+            # Judge0 Configuration
+            - name: SECRET_KEY_BASE
+              value: "YourSecretKeyBaseHere"
             - name: INTERVAL
               value: "0.1"
+            - name: DISABLE_DATABASE_ENVIRONMENT_CHECK
+              value: "1"
       imagePullSecrets:
         - name: scoutflo-satyam-docker-docker
 ---
