@@ -93,7 +93,7 @@ spec:
     - host: abab2.scoutflo.agency
       http:
         paths:
-          - path: /ababab2
+          - path: /ababab3
             pathType: Prefix
             backend:
               service:
@@ -103,7 +103,7 @@ spec:
     - host: domaincheck-s-u.scoutflo.agency
       http:
         paths:
-          - path: /ababab2
+          - path: /ababab3
             pathType: Prefix
             backend:
               service:
