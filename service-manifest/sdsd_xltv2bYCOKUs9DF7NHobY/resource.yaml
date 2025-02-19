@@ -6,7 +6,6 @@ metadata:
   annotations:
     eks.amazonaws.com/role-arn: arn:aws:iam::891376929531:role/Scoutflo-cloud-credentials-707e0197-a28b-4066-8090-d123c0ed386e
 
----
 apiVersion: v1
 kind:
 metadata:
