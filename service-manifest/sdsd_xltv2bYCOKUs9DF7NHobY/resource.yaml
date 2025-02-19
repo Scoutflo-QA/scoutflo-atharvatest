@@ -8,7 +8,7 @@ metadata:
 
 ---
 apiVersion: v1
-kind: Service
+kind:
 metadata:
   name: domaintest9
   namespace: default
