@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fvrtbetyntey
+  namespace: test-cert
+  labels:
+    app: fvrtbetyntey
+spec:
+  type: ClusterIP
+  selector:
+    app: fvrtbetyntey
+  ports:
+    - name: https
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fvrtbetyntey
+  namespace: test-cert
+  labels:
+    app: fvrtbetyntey
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fvrtbetyntey
+  template:
+    metadata:
+      labels:
+        app: fvrtbetyntey
+    spec:
+      containers:
+        - name: fvrtbetyntey-container
+          image: satyamp07/waitlist:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1024Mi
+              cpu: 500m
+          env:
+            - name: NEXT_PUBLIC_ATLAS_BACKEND
+              value: https://api.atlas.scoutflo.com/api
+      imagePullSecrets:
+        - name: scoutflo-satyam-docker-the-latest-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fvrtbetyntey
+  namespace: test-cert
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: oluloy.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: fvrtbetyntey
+                port:
+                  number: 3000
+    - host: dont-wait-list-xcqrn.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: fvrtbetyntey
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - dont-wait-list-xcqrn.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
