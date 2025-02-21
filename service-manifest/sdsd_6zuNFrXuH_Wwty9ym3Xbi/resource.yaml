@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pinierverv
+  namespace: test-cert
+  labels:
+    app: pinierverv
+spec:
+  type: ClusterIP
+  selector:
+    app: pinierverv
+  ports:
+    - name: https
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pinierverv
+  namespace: test-cert
+  labels:
+    app: pinierverv
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pinierverv
+  template:
+    metadata:
+      labels:
+        app: pinierverv
+    spec:
+      containers:
+        - name: pinierverv-container
+          image: satyamp07/waitlist:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1024Mi
+              cpu: 500m
+          env:
+            - name: NEXT_PUBLIC_ATLAS_BACKEND
+              value: https://api.atlas.scoutflo.com/api
+      imagePullSecrets:
+        - name: scoutflo-satyam-docker-the-latest-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pinierverv
+  namespace: test-cert
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: kopjini.scoutflo.tech
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pinierverv
+                port:
+                  number: 3000
+    - host: dont-wait-list-laxtt.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pinierverv
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - dont-wait-list-laxtt.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
