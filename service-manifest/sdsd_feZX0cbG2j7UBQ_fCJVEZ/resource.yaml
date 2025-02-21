@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: lknvrbv
+  namespace: test-cert
+  labels:
+    app: lknvrbv
+spec:
+  type: ClusterIP
+  selector:
+    app: lknvrbv
+  ports:
+    - name: https
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lknvrbv
+  namespace: test-cert
+  labels:
+    app: lknvrbv
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lknvrbv
+  template:
+    metadata:
+      labels:
+        app: lknvrbv
+    spec:
+      containers:
+        - name: lknvrbv-container
+          image: satyamp07/waitlist:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1024Mi
+              cpu: 500m
+          env:
+            - name: NEXT_PUBLIC_ATLAS_BACKEND
+              value: https://api.atlas.scoutflo.com/api
+      imagePullSecrets:
+        - name: scoutflo-satyam-docker-the-latest-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lknvrbv
+  namespace: test-cert
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: fwlekfblrhi.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: lknvrbv
+                port:
+                  number: 3000
+    - host: dont-wait-list-jkbtv.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: lknvrbv
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - dont-wait-list-jkbtv.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
