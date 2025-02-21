@@ -4,7 +4,6 @@ metadata:
   name: test-cert-four
   namespace: default
   labels:
-    app: test-cert-four
 spec:
   type: ClusterIP
   selector:
