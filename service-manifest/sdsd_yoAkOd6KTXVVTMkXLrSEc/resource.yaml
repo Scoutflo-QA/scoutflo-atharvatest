@@ -33,7 +33,7 @@ metadata:
   labels:
     app: tls2
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: tls2
