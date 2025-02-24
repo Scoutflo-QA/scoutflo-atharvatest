@@ -45,7 +45,7 @@ spec:
       serviceAccountName: scoutflo-sa-tls2
       containers:
         - name: tls2-container
-          image: 891376929531.dkr.ecr.ap-south-2.amazonaws.com/waitlist-private:latest
+          image: 891376929531.dkr.ecr.ap-south-2.amazonaws.com/waitlist-private: 1.2.0
           ports:
             - containerPort: 3000
           resources:
