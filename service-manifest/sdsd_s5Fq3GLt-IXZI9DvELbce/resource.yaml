@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: qa1
+  namespace: default
+  labels:
+    app: qa1
+spec:
+  type: ClusterIP
+  selector:
+    app: qa1
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qa1
+  namespace: default
+  labels:
+    app: qa1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qa1
+  template:
+    metadata:
+      labels:
+        app: qa1
+    spec:
+      containers:
+        - name: qa1-container
+          image: codewithdeepak/damnserver:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 300m
+            limits:
+              memory: 1024Mi
+              cpu: 700m
+          env: []
+      imagePullSecrets:
+        - name: scoutflo-deepak-dockerhub-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: qa1
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: scanoveralltest-xs2ej.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: qa1
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - scanoveralltest-xs2ej.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
