@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vneverkvberkjv
+  namespace: default
+  labels:
+    app: vneverkvberkjv
+spec:
+  type: ClusterIP
+  selector:
+    app: vneverkvberkjv
+  ports:
+    - name: https
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vneverkvberkjv
+  namespace: default
+  labels:
+    app: vneverkvberkjv
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vneverkvberkjv
+  template:
+    metadata:
+      labels:
+        app: vneverkvberkjv
+    spec:
+      containers:
+        - name: vneverkvberkjv-container
+          image: satyamp07/waitlist:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 200m
+            limits:
+              memory: 512Mi
+              cpu: 400m
+          env:
+            - name: NEXT_PUBLIC_ATLAS_BACKEND
+              value: https://api.atlas.scoutflo.com/api
+      imagePullSecrets:
+        - name: scoutflo-dockerwaitlist-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vneverkvberkjv
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: test-upsert-docker-uuvhw.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: vneverkvberkjv
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - test-upsert-docker-uuvhw.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
