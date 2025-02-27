@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: validchecks8klop
+  namespace: default
+  labels:
+    app: validchecks8klop
+spec:
+  type: ClusterIP
+  selector:
+    app: validchecks8klop
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: validchecks8klop
+  namespace: default
+  labels:
+    app: validchecks8klop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: validchecks8klop
+  template:
+    metadata:
+      labels:
+        app: validchecks8klop
+    spec:
+      containers:
+        - name: validchecks8klop-container
+          image: satyamp07/waitlist:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1024Mi
+              cpu: 300m
+          env: []
+      imagePullSecrets:
+        - name: scoutflo-satyam-docker-the-latest-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: validchecks8klop
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: waitlisthjooklko-s3t5q.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: validchecks8klop
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - waitlisthjooklko-s3t5q.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
