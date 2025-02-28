@@ -24,7 +24,7 @@ metadata:
   labels:
     app: test-commit
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: test-commit
