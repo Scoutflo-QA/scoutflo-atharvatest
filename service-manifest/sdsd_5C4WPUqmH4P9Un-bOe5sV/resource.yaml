@@ -59,6 +59,7 @@ metadata:
   namespace: default
   annotations:
     kubernetes.io/ingress.class: nginx
+    tag: vedant
 spec:
   rules:
     - host: test-upsert-docker-nhtrk.scoutflo.agency
