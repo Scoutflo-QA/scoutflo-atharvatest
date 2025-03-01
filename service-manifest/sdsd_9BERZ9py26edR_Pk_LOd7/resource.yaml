@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postscan
+  namespace: default
+  labels:
+    app: postscan
+spec:
+  type: ClusterIP
+  selector:
+    app: postscan
+  ports:
+    - name: https
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postscan
+  namespace: default
+  labels:
+    app: postscan
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postscan
+  template:
+    metadata:
+      labels:
+        app: postscan
+    spec:
+      containers:
+        - name: postscan-container
+          image: codewithdeepak/damnserver:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1024Mi
+              cpu: 500m
+          env:
+            - name: NEXT_PUBLIC_ATLAS_BACKEND
+              value: https://api.atlas.scoutflo.com/api
+      imagePullSecrets:
+        - name: scoutflo-deepak-dockerhub-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: postscan
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: atharvascantest-tzrvq.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: postscan
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - atharvascantest-tzrvq.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
