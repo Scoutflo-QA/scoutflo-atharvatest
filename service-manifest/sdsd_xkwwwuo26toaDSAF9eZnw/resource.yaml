@@ -161,7 +161,7 @@ spec:
             - name: DISABLE_DATABASE_ENVIRONMENT_CHECK
               value: "1"
       imagePullSecrets:
-        - name: scoutflo-satyam-docker-docker
+        - name: scoutflo-satyam-docker-the-latest-docker
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
