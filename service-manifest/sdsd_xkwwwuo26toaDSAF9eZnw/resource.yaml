@@ -93,7 +93,7 @@ spec:
             - name: NEXT_PUBLIC_ATLAS_BACKEND
               value: "https://api.atlas.scoutflo.com/api"
       imagePullSecrets:
-        - name: scoutflo-satyam-docker-docker
+        - name: scoutflo-satyam-docker-the-latest-docker
 ---
 # Worker Deployment
 apiVersion: apps/v1
