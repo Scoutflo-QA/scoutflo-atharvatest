@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: testab2
+  namespace: default
+  labels:
+    app: testab2
+spec:
+  type: ClusterIP
+  selector:
+    app: testab2
+  ports:
+    - name: https
+      protocol: TCP
+      port: 2358
+      targetPort: 2358
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testab2
+  namespace: default
+  labels:
+    app: testab2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: testab2
+  template:
+    metadata:
+      labels:
+        app: testab2
+    spec:
+      containers:
+        - name: testab2-container
+          image: satyamp07/judge0-server:latest
+          ports:
+            - containerPort: 2358
+          resources:
+            requests:
+              memory: 1Gi
+              cpu: 500m
+            limits:
+              memory: 1Gi
+              cpu: 1000m
+          env: []
+      imagePullSecrets:
+        - name: scoutflo-satyam-judge0-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: testab2
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: judge0-test-evx80.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: testab2
+                port:
+                  number: 2358
+  tls:
+    - hosts:
+        - judge0-test-evx80.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
