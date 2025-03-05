@@ -4,6 +4,9 @@ kind: Service
 metadata:
   name: judge0-server
   namespace: default
+  labels:
+    app: judge0
+    component: server
 spec:
   selector:
     app: judge0
@@ -25,6 +28,11 @@ metadata:
     component: server
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
   selector:
     matchLabels:
       app: judge0
@@ -35,13 +43,23 @@ spec:
         app: judge0
         component: server
     spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:1.28
+          command: ['sh', '-c', 'until nc -z $POSTGRES_HOST $POSTGRES_PORT; do echo waiting for postgres; sleep 2; done;']
+          env:
+            - name: POSTGRES_HOST
+              value: "db-postgresql-blr1-60847-do-user-16540921-0.i.db.ondigitalocean.com"
+            - name: POSTGRES_PORT
+              value: "25060"
       containers:
         - name: server
           image: satyamp07/judge0:latest
           command: ["/bin/bash"]
-          args: ["-c", "rails db:migrate && rails server"]
+          args: ["-c", "bundle exec rails db:migrate && bundle exec rails server -p 2358 -b 0.0.0.0"]
           ports:
-            - containerPort: 2358
+            - name: http
+              containerPort: 2358
           resources:
             requests:
               memory: 512Mi
@@ -49,6 +67,19 @@ spec:
             limits:
               memory: 1024Mi
               cpu: 400m
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 2358
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 2358
+            initialDelaySeconds: 60
+            periodSeconds: 20
           env:
             # Rails Environment
             - name: RAILS_ENV
@@ -69,15 +100,24 @@ spec:
             - name: POSTGRES_USER
               value: "doadmin"
             - name: POSTGRES_PASSWORD
-              value: "AVNS_u4vMOng_vMdjYzHkARi"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: password
             # Redis Configuration
             - name: REDIS_SSL
               value: "true"
             - name: REDIS_URL
-              value: "rediss://default:AVNS_4AaSmffZAEFYZiL5t7h@boardinfinity-test-redis-do-user-16540921-0.i.db.ondigitalocean.com:25061/0"
+              valueFrom:
+                secretKeyRef:
+                  name: redis-credentials
+                  key: url
             # Judge0 Configuration
             - name: SECRET_KEY_BASE
-              value: "YourSecretKeyBaseHere"
+              valueFrom:
+                secretKeyRef:
+                  name: judge0-secrets
+                  key: secret-key-base
             - name: MAINTENANCE_MESSAGE
               value: "Judge0 is under maintenance"
             - name: INTERVAL
@@ -106,6 +146,11 @@ metadata:
     component: worker
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
   selector:
     matchLabels:
       app: judge0
@@ -116,6 +161,15 @@ spec:
         app: judge0
         component: worker
     spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:1.28
+          command: ['sh', '-c', 'until nc -z $POSTGRES_HOST $POSTGRES_PORT; do echo waiting for postgres; sleep 2; done;']
+          env:
+            - name: POSTGRES_HOST
+              value: "db-postgresql-blr1-60847-do-user-16540921-0.i.db.ondigitalocean.com"
+            - name: POSTGRES_PORT
+              value: "25060"
       containers:
         - name: worker
           image: satyamp07/judge0:latest
@@ -147,15 +201,24 @@ spec:
             - name: POSTGRES_USER
               value: "doadmin"
             - name: POSTGRES_PASSWORD
-              value: "AVNS_u4vMOng_vMdjYzHkARi"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: password
             # Redis Configuration
             - name: REDIS_SSL
               value: "true"
             - name: REDIS_URL
-              value: "rediss://default:AVNS_4AaSmffZAEFYZiL5t7h@boardinfinity-test-redis-do-user-16540921-0.i.db.ondigitalocean.com:25061/0"
+              valueFrom:
+                secretKeyRef:
+                  name: redis-credentials
+                  key: url
             # Judge0 Configuration
             - name: SECRET_KEY_BASE
-              value: "YourSecretKeyBaseHere"
+              valueFrom:
+                secretKeyRef:
+                  name: judge0-secrets
+                  key: secret-key-base
             - name: INTERVAL
               value: "0.1"
             - name: DISABLE_DATABASE_ENVIRONMENT_CHECK
