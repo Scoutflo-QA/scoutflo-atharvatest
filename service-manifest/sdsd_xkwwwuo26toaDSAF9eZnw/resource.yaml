@@ -56,7 +56,16 @@ spec:
         - name: server
           image: satyamp07/judge0:latest
           command: ["/bin/bash"]
-          args: ["-c", "bundle exec rails db:migrate && bundle exec rails server -p 2358 -b 0.0.0.0"]
+          args: 
+            - "-c"
+            - |
+              set -e
+              echo "Initializing Judge0 Server..."
+              printenv
+              echo "Running database migrations..."
+              bundle exec rails db:migrate
+              echo "Starting Rails server..."
+              bundle exec rails server -p 2358 -b 0.0.0.0
           ports:
             - name: http
               containerPort: 2358
@@ -71,15 +80,16 @@ spec:
             httpGet:
               path: /
               port: 2358
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            failureThreshold: 3
+            initialDelaySeconds: 45
+            periodSeconds: 15
+            failureThreshold: 5
           livenessProbe:
             httpGet:
               path: /
               port: 2358
             initialDelaySeconds: 60
-            periodSeconds: 20
+            periodSeconds: 30
+            failureThreshold: 3
           env:
             # Rails Environment
             - name: RAILS_ENV
@@ -173,7 +183,24 @@ spec:
       containers:
         - name: worker
           image: satyamp07/judge0:latest
-          command: ["./scripts/workers"]
+          command: ["/bin/bash"]
+          args: 
+            - "-c"
+            - |
+              set -e
+              echo "Initializing Judge0 Worker..."
+              pwd
+              ls -la /app
+              ls -la /app/scripts
+              printenv
+              echo "Attempting to run workers..."
+              if [ -f "/app/scripts/workers" ]; then
+                chmod +x /app/scripts/workers
+                /app/scripts/workers
+              else
+                echo "ERROR: Worker script not found!"
+                exit 1
+              fi
           resources:
             requests:
               memory: 1Gi
