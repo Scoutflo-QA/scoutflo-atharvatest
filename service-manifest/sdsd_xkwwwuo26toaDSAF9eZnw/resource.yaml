@@ -9,7 +9,7 @@ spec:
     app: judge0
     component: server
   ports:
-    - protocol: HTTPS
+    - protocol: TCP
       port: 2358
       targetPort: 2358
   type: ClusterIP
