@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: scoutflo-sa-newtests
+  namespace: default
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::891376929531:role/Scoutflo-cloud-credentials-3272ca00-3b68-4272-8e2d-90327b6c3965
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: newtests
+  namespace: default
+  labels:
+    app: newtests
+spec:
+  type: ClusterIP
+  selector:
+    app: newtests
+  ports:
+    - name: https
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: newtests
+  namespace: default
+  labels:
+    app: newtests
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: newtests
+  template:
+    metadata:
+      labels:
+        app: newtests
+    spec:
+      serviceAccountName: scoutflo-sa-newtests
+      containers:
+        - name: newtests-container
+          image: 891376929531.dkr.ecr.ap-south-2.amazonaws.com/waitlist-private:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1024Mi
+              cpu: 500m
+          env:
+            - name: NEXT_PUBLIC_ATLAS_BACKEND
+              value: https://api.atlas.scoutflo.com/api
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: newtests
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: ecrpvtwaitlist-egfn9.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: newtests
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - ecrpvtwaitlist-egfn9.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
