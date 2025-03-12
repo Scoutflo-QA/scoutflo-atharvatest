@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: namespacetest3
+  namespace: newname1
+  labels:
+    app: namespacetest3
+spec:
+  type: ClusterIP
+  selector:
+    app: namespacetest3
+  ports:
+    - name: https
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: namespacetest3
+  namespace: newname1
+  labels:
+    app: namespacetest3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: namespacetest3
+  template:
+    metadata:
+      labels:
+        app: namespacetest3
+    spec:
+      containers:
+        - name: namespacetest3-container
+          image: satyamp07/waitlist:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1024Mi
+              cpu: 500m
+          env:
+            - name: NEXT_PUBLIC_ATLAS_BACKEND
+              value: https://api.atlas.scoutflo.com/api
+      imagePullSecrets:
+        - name: scoutflo-satyam-docker-the-latest-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: namespacetest3
+  namespace: newname1
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: namespacetest-ozbje.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: namespacetest3
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - namespacetest-ozbje.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
