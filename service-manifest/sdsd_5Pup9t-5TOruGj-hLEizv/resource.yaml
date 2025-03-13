@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: asasds
+  namespace: athunew
+  labels:
+    app: asasds
+spec:
+  type: ClusterIP
+  selector:
+    app: asasds
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: asasds
+  namespace: athunew
+  labels:
+    app: asasds
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: asasds
+  template:
+    metadata:
+      labels:
+        app: asasds
+    spec:
+      containers:
+        - name: asasds-container
+          image: satyamp07/waitlist:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1024Mi
+              cpu: 500m
+          env: []
+      imagePullSecrets:
+        - name: scoutflo-satyam-docker-the-latest-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: asasds
+  namespace: athunew
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: nmoiooio-z5dh0.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: asasds
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - nmoiooio-z5dh0.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
