@@ -1,0 +1,162 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2025-03-28T13:06:53.886385279Z",
+  "ArtifactName": "codewithdeepak/damnserver:v1.0.1",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "alpine",
+      "Name": "3.17.3",
+      "EOSL": true
+    },
+    "ImageID": "sha256:cca8bb6f73a59437fbc58d0af7e44e4c0dc51995499b1106ca6085eeea401a4b",
+    "DiffIDs": [
+      "sha256:26cbea5cba74143fbe6f584f5fc5321543155aedc4a434fcaa63b643877b5a74",
+      "sha256:92a6bff90f79b0038c236e530dfe1c6621a66080b4bb0db7d0f844ad6b22c06a",
+      "sha256:df8e43203da902781f1c166542222b886d19d02cf150aa6f6d89c2f99a1b6798",
+      "sha256:23350eaaee74eb7489cf166e7ea3f4234c74eb57a8f6757cb9fdcab8352eaaa0",
+      "sha256:174631e188ff9bfe106c14068c8c041d468886e63e7de9c5739ddd4438c7ac75",
+      "sha256:b1b5898482ccf592f49614d375b8f2f6191dfba4bda00aefe775582ee1797bf5",
+      "sha256:d1ba081025ece49c396dab001c88694e643b2ff0acb29db29fabeab15a672d3b",
+      "sha256:9d3da76df4b96573440b26298565981340d9e38f63b4217b779b0aa83df9f861",
+      "sha256:4483ae88a6a3fbeb88cf236c8fe64d464935054296acfcb2db6435f70ab945c7"
+    ],
+    "RepoTags": [
+      "codewithdeepak/damnserver:v1.0.1"
+    ],
+    "RepoDigests": [
+      "codewithdeepak/damnserver@sha256:165fa37aa5756f1d46bfd21426dfa1fed6ef17cedaad908a168568df216666f4"
+    ],
+    "ImageConfig": {
+      "architecture": "arm64",
+      "created": "2025-01-21T10:30:13.572876135Z",
+      "history": [
+        {
+          "created": "2023-03-29T17:39:18.063622104Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:e51d4089e73ad6dee52b31f0c8059a00c17df6e23f6741fe11b43bd84cc99008 in / "
+        },
+        {
+          "created": "2023-03-29T17:39:18.167879762Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
+          "empty_layer": true
+        },
+        {
+          "created": "2023-03-29T21:07:48.105890343Z",
+          "created_by": "/bin/sh -c #(nop)  ENV NODE_VERSION=14.21.3",
+          "empty_layer": true
+        },
+        {
+          "created": "2023-03-29T21:20:17.031952214Z",
+          "created_by": "/bin/sh -c addgroup -g 1000 node     \u0026\u0026 adduser -u 1000 -G node -s /bin/sh -D node     \u0026\u0026 apk add --no-cache         libstdc++     \u0026\u0026 apk add --no-cache --virtual .build-deps         curl     \u0026\u0026 ARCH= \u0026\u0026 alpineArch=\"$(apk --print-arch)\"       \u0026\u0026 case \"${alpineArch##*-}\" in         x86_64)           ARCH='x64'           CHECKSUM=\"39c334bd7ef3a6e5a5a396e08b3edbe335d86161bbfba222c75aa4a3518af942\"           ;;         *) ;;       esac   \u0026\u0026 if [ -n \"${CHECKSUM}\" ]; then     set -eu;     curl -fsSLO --compressed \"https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz\";     echo \"$CHECKSUM  node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz\" | sha256sum -c -       \u0026\u0026 tar -xJf \"node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz\" -C /usr/local --strip-components=1 --no-same-owner       \u0026\u0026 ln -s /usr/local/bin/node /usr/local/bin/nodejs;   else     echo \"Building from source\"     \u0026\u0026 apk add --no-cache --virtual .build-deps-full         binutils-gold         g++         gcc         gnupg         libgcc         linux-headers         make         python3     \u0026\u0026 for key in       4ED778F539E3634C779C87C6D7062848A1AB005C       141F07595B7B3FFE74309A937405533BE57C7D57       74F12602B6F1C4E913FAA37AD3A89613643B6201       61FC681DFB92A079F1685E77973F295594EC4689       8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600       C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8       890C08DB8579162FEE0DF9DB8BEAB4DFCF555EF4       C82FA3AE1CBEDC6BE46B9360C43CEC45C17AB93C       108F52B48DB57BB0CC439B2997B01419BD92F80A     ; do       gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys \"$key\" ||       gpg --batch --keyserver keyserver.ubuntu.com --recv-keys \"$key\" ;     done     \u0026\u0026 curl -fsSLO --compressed \"https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION.tar.xz\"     \u0026\u0026 curl -fsSLO --compressed \"https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc\"     \u0026\u0026 gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc     \u0026\u0026 grep \" node-v$NODE_VERSION.tar.xz\\$\" SHASUMS256.txt | sha256sum -c -     \u0026\u0026 tar -xf \"node-v$NODE_VERSION.tar.xz\"     \u0026\u0026 cd \"node-v$NODE_VERSION\"     \u0026\u0026 ./configure     \u0026\u0026 make -j$(getconf _NPROCESSORS_ONLN) V=     \u0026\u0026 make install     \u0026\u0026 apk del .build-deps-full     \u0026\u0026 cd ..     \u0026\u0026 rm -Rf \"node-v$NODE_VERSION\"     \u0026\u0026 rm \"node-v$NODE_VERSION.tar.xz\" SHASUMS256.txt.asc SHASUMS256.txt;   fi   \u0026\u0026 rm -f \"node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz\"   \u0026\u0026 apk del .build-deps   \u0026\u0026 node --version   \u0026\u0026 npm --version"
+        },
+        {
+          "created": "2023-03-29T21:20:17.491613941Z",
+          "created_by": "/bin/sh -c #(nop)  ENV YARN_VERSION=1.22.19",
+          "empty_layer": true
+        },
+        {
+          "created": "2023-03-29T21:20:21.803661102Z",
+          "created_by": "/bin/sh -c apk add --no-cache --virtual .build-deps-yarn curl gnupg tar   \u0026\u0026 for key in     6A010C5166006599AA17F08146C2130DFD2497F5   ; do     gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys \"$key\" ||     gpg --batch --keyserver keyserver.ubuntu.com --recv-keys \"$key\" ;   done   \u0026\u0026 curl -fsSLO --compressed \"https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz\"   \u0026\u0026 curl -fsSLO --compressed \"https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc\"   \u0026\u0026 gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz   \u0026\u0026 mkdir -p /opt   \u0026\u0026 tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/   \u0026\u0026 ln -s /opt/yarn-v$YARN_VERSION/bin/yarn /usr/local/bin/yarn   \u0026\u0026 ln -s /opt/yarn-v$YARN_VERSION/bin/yarnpkg /usr/local/bin/yarnpkg   \u0026\u0026 rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz   \u0026\u0026 apk del .build-deps-yarn   \u0026\u0026 yarn --version"
+        },
+        {
+          "created": "2023-03-29T21:20:21.89685024Z",
+          "created_by": "/bin/sh -c #(nop) COPY file:4d192565a7220e135cab6c77fbc1c73211b69f3d9fb37e62857b2c6eb9363d51 in /usr/local/bin/ "
+        },
+        {
+          "created": "2023-03-29T21:20:21.970309288Z",
+          "created_by": "/bin/sh -c #(nop)  ENTRYPOINT [\"docker-entrypoint.sh\"]",
+          "empty_layer": true
+        },
+        {
+          "created": "2023-03-29T21:20:22.045663229Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"node\"]",
+          "empty_layer": true
+        },
+        {
+          "created": "2025-01-18T14:57:41.926789961Z",
+          "created_by": "WORKDIR /usr/src/app",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2025-01-18T14:57:41.965222295Z",
+          "created_by": "COPY package*.json ./ # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2025-01-18T14:57:56.712038885Z",
+          "created_by": "RUN /bin/sh -c npm install # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2025-01-18T14:58:00.02786822Z",
+          "created_by": "RUN /bin/sh -c npm ci --only=production # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2025-01-21T10:30:13.572876135Z",
+          "created_by": "COPY . . # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2025-01-21T10:30:13.572876135Z",
+          "created_by": "EXPOSE map[5000/tcp:{}]",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2025-01-21T10:30:13.572876135Z",
+          "created_by": "CMD [\"node\" \"src/index.js\"]",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:26cbea5cba74143fbe6f584f5fc5321543155aedc4a434fcaa63b643877b5a74",
+          "sha256:92a6bff90f79b0038c236e530dfe1c6621a66080b4bb0db7d0f844ad6b22c06a",
+          "sha256:df8e43203da902781f1c166542222b886d19d02cf150aa6f6d89c2f99a1b6798",
+          "sha256:23350eaaee74eb7489cf166e7ea3f4234c74eb57a8f6757cb9fdcab8352eaaa0",
+          "sha256:174631e188ff9bfe106c14068c8c041d468886e63e7de9c5739ddd4438c7ac75",
+          "sha256:b1b5898482ccf592f49614d375b8f2f6191dfba4bda00aefe775582ee1797bf5",
+          "sha256:d1ba081025ece49c396dab001c88694e643b2ff0acb29db29fabeab15a672d3b",
+          "sha256:9d3da76df4b96573440b26298565981340d9e38f63b4217b779b0aa83df9f861",
+          "sha256:4483ae88a6a3fbeb88cf236c8fe64d464935054296acfcb2db6435f70ab945c7"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "node",
+          "src/index.js"
+        ],
+        "Entrypoint": [
+          "docker-entrypoint.sh"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "NODE_VERSION=14.21.3",
+          "YARN_VERSION=1.22.19"
+        ],
+        "WorkingDir": "/usr/src/app",
+        "ExposedPorts": {
+          "5000/tcp": {}
+        },
+        "ArgsEscaped": true
+      },
+      "variant": "v8"
+    }
+  },
+  "Results": [
+    {
+      "Target": "codewithdeepak/damnserver:v1.0.1 (alpine 3.17.3)",
+      "Class": "os-pkgs",
+      "Type": "alpine"
+    },
+    {
+      "Target": "Node.js",
+      "Class": "lang-pkgs",
+      "Type": "node-pkg"
+    }
+  ]
+}
