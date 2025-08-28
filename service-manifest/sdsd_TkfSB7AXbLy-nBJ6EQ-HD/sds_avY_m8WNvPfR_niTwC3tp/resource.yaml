@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: lol-2-yobpz
+  namespace: default
+  labels:
+    app: lol-2-yobpz
+spec:
+  type: ClusterIP
+  selector:
+    app: lol-2-yobpz
+  ports:
+    - name: https
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lol-2-yobpz
+  namespace: default
+  labels:
+    app: lol-2-yobpz
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lol-2-yobpz
+  template:
+    metadata:
+      labels:
+        app: lol-2-yobpz
+    spec:
+      containers:
+        - name: lol-2-yobpz-container
+          image: satyamp07/waitlist:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 200m
+          env:
+            - name: NEXT_PUBLIC_ATLAS_BACKEND
+              value: https://api.atlas.scoutflo.com/api
+      imagePullSecrets:
+        - name: scoutflo-satyam-docker-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lol-2-yobpz
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: lol-2-sdsavym8wnvpfrnitwc3tp-miu9.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: lol-2-yobpz
+                port:
+                  number: 3000
+    - host: test2.kubedeploy.live
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: lol-2-yobpz
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - lol-2-sdsavym8wnvpfrnitwc3tp-miu9.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
+    - hosts:
+        - test2.kubedeploy.live
+      secretName: wildcard-z0036500rviu1vgw63pe-tls
