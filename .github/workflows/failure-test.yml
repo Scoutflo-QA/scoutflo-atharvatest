@@ -1,0 +1,12 @@
+name: Failure Test
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+
+jobs:
+  failure-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail step
+        run: exit 1
