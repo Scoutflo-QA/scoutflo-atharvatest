@@ -35,7 +35,7 @@ spec:
     spec:
       containers:
         - name: n8n-service-1-fiecw-container
-          image: satyamp07/n8n:latest
+          image: satyamp07/n8n:1.76.1
           ports:
             - containerPort: 5678
           resources:
