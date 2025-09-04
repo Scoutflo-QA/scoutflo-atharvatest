@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: n8n-service-1-y3kb5
+  namespace: testpat-ht3ov
+  labels:
+    app: n8n-service-1-y3kb5
+spec:
+  type: ClusterIP
+  selector:
+    app: n8n-service-1-y3kb5
+  ports:
+    - name: https
+      protocol: TCP
+      port: 5678
+      targetPort: 5678
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n-service-1-y3kb5
+  namespace: testpat-ht3ov
+  labels:
+    app: n8n-service-1-y3kb5
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: n8n-service-1-y3kb5
+  template:
+    metadata:
+      labels:
+        app: n8n-service-1-y3kb5
+    spec:
+      containers:
+        - name: n8n-service-1-y3kb5-container
+          image: satyamp07/n8n:latest
+          ports:
+            - containerPort: 5678
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 200m
+          env: []
+      imagePullSecrets:
+        - name: scoutflo-satyam-docker-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: n8n-service-1-y3kb5
+  namespace: testpat-ht3ov
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: n8n-service-1-sdsktbmvifeoniyv7f-zvebu-v44h.scoutflo.agency
+      http:
+        paths:
+          - path: /new
+            pathType: Prefix
+            backend:
+              service:
+                name: n8n-service-1-y3kb5
+                port:
+                  number: 5678
+  tls:
+    - hosts:
+        - n8n-service-1-sdsktbmvifeoniyv7f-zvebu-v44h.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
