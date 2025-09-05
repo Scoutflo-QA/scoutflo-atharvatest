@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-1-rf9ql
+  namespace: default
+  labels:
+    app: service-1-rf9ql
+spec:
+  type: ClusterIP
+  selector:
+    app: service-1-rf9ql
+  ports:
+    - name: https
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-1-rf9ql
+  namespace: default
+  labels:
+    app: service-1-rf9ql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-1-rf9ql
+  template:
+    metadata:
+      labels:
+        app: service-1-rf9ql
+    spec:
+      containers:
+        - name: service-1-rf9ql-container
+          image: satyamp07/waitlist:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 200m
+          env:
+            - name: NEXT_PUBLIC_ATLAS_BACKEND
+              value: https://api.atlas.scoutflo.com/api
+      imagePullSecrets:
+        - name: scoutflo-satyam-docker-docker
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: service-1-rf9ql
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: service-1-sdsiicnsbucl6g3l05xb8wz8-bsxui.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: service-1-rf9ql
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - service-1-sdsiicnsbucl6g3l05xb8wz8-bsxui.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
