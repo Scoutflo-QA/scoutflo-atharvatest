@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: scoutflo-sa-demo-service-frtyu
+  namespace: default
+  annotations:
+    eks.amazonaws.com/role-arn: u1HmB+p1X2Bev+KcrP3fbIuZBxWPDiyATYw0Nstt55LMJoHreh3W5+loAyDTS4vgQUSzhMzuQ/M80BF/bqXjk6y8eHEpSPxEyudc2rCmuEXsnmqqfDLooUvSDqoG6zHv
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-service-frtyu
+  namespace: default
+  labels:
+    app: demo-service-frtyu
+spec:
+  type: ClusterIP
+  selector:
+    app: demo-service-frtyu
+  ports:
+    - name: https
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-service-frtyu
+  namespace: default
+  labels:
+    app: demo-service-frtyu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-service-frtyu
+  template:
+    metadata:
+      labels:
+        app: demo-service-frtyu
+    spec:
+      serviceAccountName: scoutflo-sa-demo-service-frtyu
+      containers:
+        - name: demo-service-frtyu-container
+          image: 296062577626.dkr.ecr.ap-south-1.amazonaws.com/welcome-scoutflo:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: 25Mi
+              cpu: 10m
+            limits:
+              memory: 51Mi
+              cpu: 20m
+          env: []
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-service-frtyu
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: demo-service-sds5uksnj2ir7b7p-suexwm3-dofeh.scoutflo.agency
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: demo-service-frtyu
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - demo-service-sds5uksnj2ir7b7p-suexwm3-dofeh.scoutflo.agency
+      secretName: scoutflo-agency-wildcard-tls
