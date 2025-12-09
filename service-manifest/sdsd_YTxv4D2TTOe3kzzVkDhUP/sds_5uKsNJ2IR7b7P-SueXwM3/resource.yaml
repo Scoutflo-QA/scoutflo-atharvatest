@@ -31,6 +31,8 @@ metadata:
 spec:
   hosts:
   - demo-service-sds5uksnj2ir7b7p-suexwm3-dofeh.scoutflo.agency
+  maxReplicas: 5
+  minReplicas: 0
   scaleTargetRef:
     name: demo-service-frtyu          
     service: demo-service-frtyu        
@@ -108,9 +110,9 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: keda-add-ons-http-interceptor-proxy   # <─ CHANGED
+            name: keda-add-ons-http-interceptor-proxy   
             port:
-              number: 8080                              # <─ CHANGED
+              number: 8080                             
   tls:
   - hosts:
     - demo-service-sds5uksnj2ir7b7p-suexwm3-dofeh.scoutflo.agency
