@@ -32,8 +32,9 @@ spec:
   hosts:
   - demo-service-sds5uksnj2ir7b7p-suexwm3-dofeh.scoutflo.agency
   scaleTargetRef:
-    name: demo-service-frtyu           # Deployment name
+    name: demo-service-frtyu          
     service: demo-service-frtyu        
+    port: 3000                         
   minReplicas: 0
   maxReplicas: 5
 ---
