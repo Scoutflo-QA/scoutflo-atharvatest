@@ -102,6 +102,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
 spec:
+  ingressClassName: nginx
   rules:
   - host: demo-service-sds5uksnj2ir7b7p-suexwm3-dofeh.scoutflo.agency
     http:
