@@ -32,7 +32,8 @@ spec:
   hosts:
   - demo-service-sds5uksnj2ir7b7p-suexwm3-dofeh.scoutflo.agency
   scaleTargetRef:
-    name: demo-service-frtyu
+    name: demo-service-frtyu           # Deployment name
+    service: demo-service-frtyu        # ← ADD THIS LINE (Service name)
   minReplicas: 0
   maxReplicas: 5
 ---
@@ -44,7 +45,7 @@ metadata:
   labels:
     app: demo-service-frtyu
 spec:
-  replicas: 0                    # ← CHANGE 1: 1 → 0
+  replicas: 0                    # â CHANGE 1: 1 â 0
   selector:
     matchLabels:
       app: demo-service-frtyu
