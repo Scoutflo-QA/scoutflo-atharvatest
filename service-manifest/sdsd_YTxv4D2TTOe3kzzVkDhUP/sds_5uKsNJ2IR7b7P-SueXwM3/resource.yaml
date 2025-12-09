@@ -5,7 +5,6 @@ metadata:
   namespace: default
   annotations:
     eks.amazonaws.com/role-arn: u1HmB+p1X2Bev+KcrP3fbIuZBxWPDiyATYw0Nstt55LMJoHreh3W5+loAyDTS4vgQUSzhMzuQ/M80BF/bqXjk6y8eHEpSPxEyudc2rCmuEXsnmqqfDLooUvSDqoG6zHv
-
 ---
 apiVersion: v1
 kind: Service
@@ -23,7 +22,6 @@ spec:
       protocol: TCP
       port: 3000
       targetPort: 3000
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -44,19 +42,41 @@ spec:
     spec:
       serviceAccountName: scoutflo-sa-demo-service-frtyu
       containers:
-        - name: demo-service-frtyu-container
-          image: 296062577626.dkr.ecr.ap-south-1.amazonaws.com/welcome-scoutflo:latest
-          ports:
-            - containerPort: 3000
-          resources:
-            requests:
-              memory: 25Mi
-              cpu: 10m
-            limits:
-              memory: 51Mi
-              cpu: 20m
-          env: []
-
+      - name: demo-service-frtyu-container
+        image: 296062577626.dkr.ecr.ap-south-1.amazonaws.com/welcome-scoutflo:latest
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 100m
+          limits:
+            memory: 256Mi
+            cpu: 500m
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        imagePullPolicy: Always
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -67,17 +87,17 @@ metadata:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
-    - host: demo-service-sds5uksnj2ir7b7p-suexwm3-dofeh.scoutflo.agency
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: demo-service-frtyu
-                port:
-                  number: 3000
+  - host: demo-service-sds5uksnj2ir7b7p-suexwm3-dofeh.scoutflo.agency
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: demo-service-frtyu
+            port:
+              number: 3000
   tls:
-    - hosts:
-        - demo-service-sds5uksnj2ir7b7p-suexwm3-dofeh.scoutflo.agency
-      secretName: scoutflo-agency-wildcard-tls
+  - hosts:
+    - demo-service-sds5uksnj2ir7b7p-suexwm3-dofeh.scoutflo.agency
+    secretName: scoutflo-agency-wildcard-tls
