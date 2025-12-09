@@ -108,9 +108,9 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: demo-service-frtyu
+            name: keda-add-ons-http-interceptor-proxy   # <─ CHANGED
             port:
-              number: 3000
+              number: 8080                              # <─ CHANGED
   tls:
   - hosts:
     - demo-service-sds5uksnj2ir7b7p-suexwm3-dofeh.scoutflo.agency
