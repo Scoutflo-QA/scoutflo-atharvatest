@@ -23,6 +23,19 @@ spec:
       port: 3000
       targetPort: 3000
 ---
+apiVersion: http.keda.sh/v1alpha1
+kind: HTTPScaledObject
+metadata:
+  name: demo-service-frtyu-http
+  namespace: default
+spec:
+  hosts:
+  - demo-service-sds5uksnj2ir7b7p-suexwm3-dofeh.scoutflo.agency
+  scaleTargetRef:
+    name: demo-service-frtyu
+  minReplicas: 0
+  maxReplicas: 5
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -30,11 +43,8 @@ metadata:
   namespace: default
   labels:
     app: demo-service-frtyu
-  annotations:
-    argocd.argoproj.io/compare-options: ignoreReplicas
-    argocd.argoproj.io/sync-options: Prune=false
 spec:
-  replicas: 1
+  replicas: 0                    # ← CHANGE 1: 1 → 0
   selector:
     matchLabels:
       app: demo-service-frtyu
