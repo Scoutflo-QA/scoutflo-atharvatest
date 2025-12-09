@@ -30,6 +30,9 @@ metadata:
   namespace: default
   labels:
     app: demo-service-frtyu
+  annotations:
+    argocd.argoproj.io/compare-options: ignoreReplicas
+    argocd.argoproj.io/sync-options: Prune=false
 spec:
   replicas: 1
   selector:
